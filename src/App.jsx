@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Blog } from './pages/Blog.jsx'
+import { RecipeBlog } from './pages/RecipeBlog.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Signup } from './pages/Signup.jsx'
 import { Login } from './pages/Login.jsx'
@@ -9,7 +9,7 @@ const queryClient = new QueryClient()
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Blog />,
+    element: <RecipeBlog />,
   },
   {
     path: '/signup',

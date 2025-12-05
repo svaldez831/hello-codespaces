@@ -1,0 +1,8 @@
+Users can sign up and log in DONE
+
+Each user can create, view, and manage their own recipes NEED MANAGE, 
+MOVE TO A CREATE PAGE SO THEY CAN SEE THEIR OWN 
+
+A recipe contains a title, ingredient list, and an image (via URL) DONE, WORK ON ARRAY OF INGREDIENTS
+
+Focus on core CRUD functionality, form handling, and schema design DONE

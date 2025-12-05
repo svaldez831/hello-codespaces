@@ -10,7 +10,7 @@ export function Header() {
     const { sub } = jwtDecode(token)
     return (
       <div>
-        <h1>Greetings to MyBlog</h1>
+        <h1>Recipe Blog</h1>
         Logged in as{' '}
         <strong>
           {' '}

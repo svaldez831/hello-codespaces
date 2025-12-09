@@ -1,32 +1,28 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { RecipeBlog } from './pages/RecipeBlog.jsx'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import { Signup } from './pages/Signup.jsx'
-import { Login } from './pages/Login.jsx'
+import { ApolloProvider } from '@apollo/client/react/index.js'
+import { ApolloClient, InMemoryCache } from '@apollo/client/core/index.js'
+import PropTypes from 'prop-types'
+import { HelmetProvider } from 'react-helmet-async'
 import { AuthContextProvider } from './contexts/AuthContext.jsx'
+
 const queryClient = new QueryClient()
+const apolloClient = new ApolloClient({
+  uri: import.meta.env.VITE_GRAPHQL_URL,
+  cache: new InMemoryCache(),
+})
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <RecipeBlog />,
-  },
-  {
-    path: '/signup',
-    element: <Signup />,
-  },
-  {
-    path: '/login',
-    element: <Login />,
-  },
-])
-
-export function App() {
+export function App({ children }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
-        <RouterProvider router={router} />
-      </AuthContextProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <ApolloProvider client={apolloClient}>
+        <QueryClientProvider client={queryClient}>
+          <AuthContextProvider>{children}</AuthContextProvider>
+        </QueryClientProvider>
+      </ApolloProvider>
+    </HelmetProvider>
   )
+}
+
+App.propTypes = {
+  children: PropTypes.element.isRequired,
 }

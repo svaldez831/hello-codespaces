@@ -1,33 +1,37 @@
 import { Link } from 'react-router-dom'
 import { jwtDecode } from 'jwt-decode'
+import { useQuery } from '@tanstack/react-query'
+import { getUserInfo } from '../api/users.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { User } from './User.jsx'
 
 export function Header() {
   const [token, setToken] = useAuth()
 
-  if (token) {
-    const { sub } = jwtDecode(token)
+  const { sub } = token ? jwtDecode(token) : {}
+  const userInfoQuery = useQuery({
+    queryKey: ['users', sub],
+    queryFn: () => getUserInfo(sub),
+    enabled: Boolean(sub),
+  })
+  const userInfo = userInfoQuery.data
+
+  if (token && userInfo) {
     return (
-      <div>
-        <h1>Recipe Blog</h1>
-        Logged in as{' '}
-        <strong>
-          {' '}
-          <User id={sub} />{' '}
-        </strong>
-        &nbsp;
+      <nav>
+        Logged in as <User {...userInfo} />
         <br />
-        <button onClick={() => setToken(null)}>Log out</button>
-      </div>
-    )
-  } else {
-    return (
-      <div>
-        <h1>Greetings to MyBlog</h1>
-        <Link to='/login'>Log In</Link> &nbsp; | &nbsp;{' '}
-        <Link to='/signup'>Sign Up</Link>
-      </div>
+        <button onClick={() => setToken(null)}>Logout</button>
+      </nav>
     )
   }
+
+  return (
+    <div>
+      <h1>WELCOME TO THE BLOG!</h1>
+      <nav>
+        <Link to='/login'>Log In</Link> | <Link to='/signup'>Sign Up</Link>
+      </nav>
+    </div>
+  )
 }

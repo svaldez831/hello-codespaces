@@ -1,18 +1,40 @@
 import express from 'express'
-import { recipeRoutes } from './routes/recipes.js'
-import { userRoutes } from './routes/users.js'
-import bodyParser from 'body-parser'
 import cors from 'cors'
+import bodyParser from 'body-parser'
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@apollo/server/express4'
+
+import { typeDefs, resolvers } from './graphql/index.js'
+import { userRoutes } from './routes/users.js'
+import { eventRoutes } from './routes/events.js'
+import { optionalAuth } from './middleware/jwt.js'
 
 const app = express()
-app.use(bodyParser.json())
 app.use(cors())
+app.use(bodyParser.json())
 
-recipeRoutes(app)
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+})
+
+apolloServer.start().then(() =>
+  app.use(
+    '/graphql',
+    optionalAuth,
+    expressMiddleware(apolloServer, {
+      context: async ({ req }) => {
+        return { auth: req.auth }
+      },
+    }),
+  ),
+)
+
 userRoutes(app)
+eventRoutes(app)
 
 app.get('/', (req, res) => {
-  res.send('Recipe Back-End !')
+  res.send('Hello World from Express!')
 })
 
 export { app }

@@ -1,0 +1,4 @@
+{
+    "$schema":"https://ominous-fortnight-g46p5qg94xrrfvwr9-3001.app.github.dev/graphql",
+    "documents": "src/api/graphql/**/*.{js,jsx}"
+}

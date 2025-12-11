@@ -14,18 +14,30 @@ export function CreatePost() {
 
   const [title, setTitle] = useState('')
   const [contents, setContents] = useState('')
-
+  const [imageUrl, setImageUrl] = useState('')
   const [createPost, { loading, data }] = useGraphQLMutation(CREATE_POST, {
-    variables: { title, contents },
-    context: { headers: { Authorization: `Bearer ${token}` } },
     refetchQueries: [GET_POSTS, GET_POSTS_BY_AUTHOR],
   })
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    createPost()
-  }
 
+    const contentList = contents
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean)
+
+    const variables = {
+      title,
+      contents: contentList,
+      imageUrl: imageUrl ?? '',
+    }
+
+    const context = token
+      ? { headers: { Authorization: `Bearer ${token}` } }
+      : {}
+    createPost({ variables, context })
+  }
   if (!token) return <div>Please log in to create new posts.</div>
 
   return (
@@ -43,8 +55,21 @@ export function CreatePost() {
       <br />
       <textarea
         value={contents}
+        placeholder='Enter one ingredient per line'
         onChange={(e) => setContents(e.target.value)}
       />
+
+      <div>
+        <label htmlFor='create-url'>Image Url:(Optional) </label>
+        <input
+          type='text'
+          name='create-url'
+          id='create-url'
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder='http://example.com/image.jpg'
+        />
+      </div>
       <br />
       <br />
       <input

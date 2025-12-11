@@ -17,7 +17,16 @@ export function Blog() {
     variables: { author, options: { sortBy, sortOrder } },
   })
   const posts = postsQuery.data?.postsByAuthor ?? postsQuery.data?.posts ?? []
-
+  const sortedPosts =
+    sortBy === 'likesCount'
+      ? [...posts].sort((a, b) => {
+          if (sortOrder === 'descending') {
+            return b.likesCount - a.likesCount
+          } else {
+            return a.likesCount - b.likesCount
+          }
+        })
+      : posts
   return (
     <div style={{ padding: 8 }}>
       <Helmet>
@@ -42,14 +51,14 @@ export function Blog() {
       />
       <br />
       <PostSorting
-        fields={['createdAt', 'updatedAt']}
+        fields={['createdAt', 'updatedAt', 'likesCount']}
         value={sortBy}
         onChange={(value) => setSortBy(value)}
         orderValue={sortOrder}
         onOrderChange={(orderValue) => setSortOrder(orderValue)}
       />
       <hr />
-      <PostList posts={posts} />
+      <PostList posts={sortedPosts} />
     </div>
   )
 }

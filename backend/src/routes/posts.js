@@ -46,6 +46,18 @@ export function postsRoutes(app) {
   app.post('/api/v1/posts', requireAuth, async (req, res) => {
     try {
       const post = await createPost(req.auth.sub, req.body)
+      const io = req.app.get('io')
+      if (io) {
+        console.log('Emitting post.created for:', post.title)
+        io.emit('post.created', {
+          id: post._id.toString?.() ?? post.id,
+          title: post.title,
+          author: post.author,
+          createdAt: post.createdAt,
+        })
+      } else {
+        console.warn('⚠️ No io instance on app; post.created not emitted')
+      }
       return res.json(post)
     } catch (err) {
       console.error('error creating post', err)

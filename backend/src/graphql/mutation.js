@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql'
 import { createUser, loginUser } from '../services/users.js'
 import { createPost, updatePost, deletePost } from '../services/posts.js'
+import slug from 'slug'
 
 export const mutationSchema = `#graphql
     type Mutation {
@@ -37,7 +38,7 @@ export const mutationResolver = {
     createPost: async (
       parent,
       { title, contents, imageUrl, tags },
-      { auth },
+      { auth, io },
     ) => {
       if (!auth) {
         throw new GraphQLError(
@@ -49,7 +50,22 @@ export const mutationResolver = {
           },
         )
       }
-      return await createPost(auth.sub, { title, contents, imageUrl, tags })
+
+      const post = await createPost(auth.sub, {
+        title,
+        contents,
+        imageUrl,
+        tags,
+      })
+      const postUrl = `/posts/${post._id?.toString?.() ?? post.id}/${slug(post.title)}`
+      io.emit('post.created', {
+        id: post._id?.toString?.() ?? post.id,
+        title: post.title,
+        author: post.author,
+        url: postUrl,
+      })
+
+      return post
     },
     updatePost: async (
       parent,
@@ -68,6 +84,7 @@ export const mutationResolver = {
         imageUrl,
         tags,
       })
+
       if (!post) {
         throw new GraphQLError('Post not found.', {
           extensions: { code: 'NOT_FOUND' },

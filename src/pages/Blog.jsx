@@ -7,6 +7,7 @@ import { PostFilter } from '../components/PostFilter.jsx'
 import { PostSorting } from '../components/PostSorting.jsx'
 import { Header } from '../components/Header.jsx'
 import { GET_POSTS, GET_POSTS_BY_AUTHOR } from '../api/graphql/posts.js'
+import { NavigationBridge } from '../NavigationBridge.jsx'
 
 export function Blog() {
   const [author, setAuthor] = useState('')
@@ -29,8 +30,9 @@ export function Blog() {
       : posts
   return (
     <div style={{ padding: 8 }}>
+      <NavigationBridge />
       <Helmet>
-        <title>Full-Stack React Blog</title>
+        <title> RECIPE BLOG </title>
         <meta
           name='description'
           content='A blog full of articles about full-stack React development.'

@@ -1,9 +1,23 @@
 export const getPosts = async (queryParams) => {
-  const res = await fetch(
+  const url =
     `${import.meta.env.VITE_BACKEND_URL}/posts?` +
-      new URLSearchParams(queryParams),
-  )
-  return await res.json()
+    new URLSearchParams(queryParams)
+
+  console.log('getPosts URL =>', url)
+
+  const res = await fetch(url)
+
+  const text = await res.text()
+  console.log('getPosts status =>', res.status)
+  console.log('getPosts content-type =>', res.headers.get('content-type'))
+  console.log('getPosts first 120 chars =>', text.slice(0, 120))
+
+  // Only parse JSON if it actually is JSON
+  if (!res.ok) {
+    throw new Error(`getPosts failed ${res.status}: ${text.slice(0, 200)}`)
+  }
+
+  return JSON.parse(text)
 }
 
 export const createPost = async (token, post) => {
